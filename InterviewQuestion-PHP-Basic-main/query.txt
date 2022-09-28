@@ -1,0 +1,29 @@
+--a
+UPDATE employee_job_table
+SET job_id = '4', effective_date = TO_DATE('2020-01-01', 'YYYY-MM-DD')
+WHERE employee_id = (
+SELECT employee_id
+FROM employee_profile_table
+WHERE employee_no = '1002');
+
+--b
+SELECT employee_name, employee_no, effective_date, job_name
+FROM employee_profile_table T1, job_profile_table T2, employee_job_table T3
+WHERE T1.employee_id = T3.employee_id
+and T3.job_id = T2.job_id;
+
+--c
+SELECT employee_name, employee_no, job_name
+FROM employee_profile_table T1, job_profile_table T2, employee_job_table T3 join (
+SELECT employee_id, max(effective_date) as latest_date
+FROM employee_job_table
+group by employee_id)
+T4 on T3.employee_id = T4.employee_id and T3.effective_date = T4.latest_date
+WHERE T1.employee_id = T3.employee_id
+and T3.job_id = T2.job_id;
+
+--d
+DELETE FROM employee_job_table T3
+WHERE employee_id = (
+SELECT employee_id FROM employee_profile_table where employee_no = '1000')
+and effective_date = TO_DATE('2020-01-01', 'YYYY-MM-DD');
